@@ -1,4 +1,6 @@
 import numpy as np
+import sys
+import pygame  # For the GUI
 import math
 
 row_count = 6  # total no of rows
@@ -79,33 +81,91 @@ def win(board, piece):  # check if the player is winning
                 return True
 
 
-board = board()  # A 6*7 matrix with all zeros
-game_over = False
-turn = 0  # player 1 goes first
+def draw_board(board):  # GUI for the board
 
-while not game_over:
-    # player 1's turn
-    if turn == 0:
-        col_move = int(input(" Player 1's turn "))  # User enters column values
-        if can_put(board, col_move):
-            row = next_top_row(board, col_move)
-            put_piece(board, row, col_move, 1)  # player 1's piece is 1
-        print_board(board)
+    # for c in range(col_count):
+    #     for r in range(row_count):
+    #         pygame.draw.rect(
+    #             screen,
+    #             (0, 0, 255),
+    #             (c * SQUARESIZE, r * SQUARESIZE + SQUARESIZE, SQUARESIZE, SQUARESIZE),
+    #         )  # draw blue squares
+    #         pygame.draw.circle(
+    #             screen,
+    #             (0, 0, 0),
+    #             (
+    #                 int(c * SQUARESIZE + SQUARESIZE / 2),
+    #                 int(r * SQUARESIZE + SQUARESIZE + SQUARESIZE / 2),
+    #             ),
+    #             RADIUS,
+    #         )  # Draw the circle
+    for c in range(col_count):
+        for r in range(row_count):
+            pygame.draw.rect(
+                screen,
+                (0, 0, 255),
+                (c * SQUARESIZE, r * SQUARESIZE + SQUARESIZE, SQUARESIZE, SQUARESIZE),
+            )  # draw blue squares
+            # surface,color,position,dimension
+            pygame.draw.circle(
+                screen,
+                (0, 0, 0),
+                (
+                    int(c * SQUARESIZE + SQUARESIZE / 2),
+                    int(r * SQUARESIZE + SQUARESIZE + SQUARESIZE / 2),
+                ),
+                RADIUS,
+            )  # Draw the circle
+            # surface,color,position,radius
 
-        if win(board, 1):
-            print("!!!! Player 1 wins !!!")
-            game_over = True  # The game is over
 
-    else:  # Player 2's turn
-        col_move = int(input(" Player 2's turn "))
-        if can_put(board, col_move):
-            row = next_top_row(board, col_move)
-            put_piece(board, row, col_move, 2)  # player 2's piece is 2
-        print_board(board)
+if __name__ == "__main__":
 
-        if win(board, 2):
-            print("!!! Player 2 wins !!!")
-            game_over = True  # The game is over
+    board = board()  # A 6*7 matrix with all zeros
+    game_over = False
+    turn = 0  # player 1 goes first
 
-    turn += 1
-    turn = turn % 2  # Turn we either be 0 or 1
+    pygame.init()  # initializing the pygame
+    SQUARESIZE = 100  # 1 square sixe is 100 pixel
+    RADIUS = int(SQUARESIZE / 2 - 5)  # Radius of the inner circle
+    width = col_count * SQUARESIZE
+    height = (row_count + 1) * SQUARESIZE
+    size = (width, height)
+    screen = pygame.display.set_mode(size)  # The dimensions of the game area
+    draw_board(board)
+    pygame.display.update()  # To update the screen
+
+    while not game_over:
+        for event in pygame.event.get():
+            # Whenever a event like key press/mouse movement occurs
+            if event.type == pygame.QUIT:  # If the player clicks upper red X bar
+                sys.exit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # if   mouse is clicked
+                print("")
+            # # player 1's turn
+            #     if turn == 0:
+            #         col_move = int(input(" Player 1's turn "))  # User enters column values
+            #         if can_put(board, col_move):
+            #             row = next_top_row(board, col_move)
+            #             put_piece(board, row, col_move, 1)  # player 1's piece is 1
+            #         print_board(board)
+
+            #         if win(board, 1):
+            #             print("!!!! Player 1 wins !!!")
+            #             game_over = True  # The game is over
+
+            #     else:  # Player 2's turn
+            #         col_move = int(input(" Player 2's turn "))
+            #         if can_put(board, col_move):
+            #             row = next_top_row(board, col_move)
+            #             put_piece(board, row, col_move, 2)  # player 2's piece is 2
+            #         print_board(board)
+
+            #         if win(board, 2):
+            #             print("!!! Player 2 wins !!!")
+            #             game_over = True  # The game is over
+
+            #     turn += 1
+            #     turn = turn % 2  # Turn we either be 0 or 1
