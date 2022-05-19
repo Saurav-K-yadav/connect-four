@@ -82,23 +82,6 @@ def win(board, piece):  # check if the player is winning
 
 
 def draw_board(board):  # GUI for the board
-
-    # for c in range(col_count):
-    #     for r in range(row_count):
-    #         pygame.draw.rect(
-    #             screen,
-    #             (0, 0, 255),
-    #             (c * SQUARESIZE, r * SQUARESIZE + SQUARESIZE, SQUARESIZE, SQUARESIZE),
-    #         )  # draw blue squares
-    #         pygame.draw.circle(
-    #             screen,
-    #             (0, 0, 0),
-    #             (
-    #                 int(c * SQUARESIZE + SQUARESIZE / 2),
-    #                 int(r * SQUARESIZE + SQUARESIZE + SQUARESIZE / 2),
-    #             ),
-    #             RADIUS,
-    #         )  # Draw the circle
     for c in range(col_count):
         for r in range(row_count):
             pygame.draw.rect(
@@ -109,7 +92,7 @@ def draw_board(board):  # GUI for the board
             # surface,color,position,dimension
             pygame.draw.circle(
                 screen,
-                (0, 0, 0),
+                (255,255,255),
                 (
                     int(c * SQUARESIZE + SQUARESIZE / 2),
                     int(r * SQUARESIZE + SQUARESIZE + SQUARESIZE / 2),
@@ -117,6 +100,39 @@ def draw_board(board):  # GUI for the board
                 RADIUS,
             )  # Draw the circle
             # surface,color,position,radius
+            # BLACK FOR EMPTY
+
+    for c in range(col_count):
+        for r in range(row_count):
+            if board[r][c] == 1:
+                pygame.draw.circle(
+                    screen,
+                    (255, 255, 0),
+                    (
+                        int(c * SQUARESIZE + SQUARESIZE / 2),
+                        height - int(r * SQUARESIZE + SQUARESIZE / 2),
+                    ),
+                    RADIUS,
+                )  # Draw the circle
+                # surface,color,position,radius
+                # value is subtracted from height as 0,0 is left top but we need to fill from bottom
+                # Player 1 Yellow
+
+            elif board[r][c] == 2:
+                pygame.draw.circle(
+                    screen,
+                    (255, 0, 0),
+                    (
+                        int(c * SQUARESIZE + SQUARESIZE / 2),
+                        height - int(r * SQUARESIZE + SQUARESIZE / 2),
+                    ),
+                    RADIUS,
+                )  # Draw the circle
+                # surface,color,position,radius
+                # value is subtracted from height as 0,0 is left top but we need to fill from bottom
+                # Player 2 red
+
+    pygame.display.update()  # To update the screen
 
 
 if __name__ == "__main__":
@@ -134,6 +150,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode(size)  # The dimensions of the game area
     draw_board(board)
     pygame.display.update()  # To update the screen
+    my_font=pygame.font.SysFont("monospace",45)#Font of the final message
 
     while not game_over:
         for event in pygame.event.get():
@@ -141,31 +158,61 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:  # If the player clicks upper red X bar
                 sys.exit()
 
+            if event.type == pygame.MOUSEMOTION:  # Whenever the mouse moves
+                # For the upper space
+                pygame.draw.rect(screen, (0,0,0), (0, 0, width, SQUARESIZE))
+                # masks previous colour
+                posx = event.pos[0]
+                if turn == 0:  # for player 1
+                    pygame.draw.circle(
+                        screen, (255, 255, 0), (posx, int(SQUARESIZE / 2)), RADIUS
+                    )
+                else:  # for player 2
+                    pygame.draw.circle(
+                        screen, (255, 0, 0), (posx, int(SQUARESIZE / 2)), RADIUS
+                    )
+            pygame.display.update()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # if   mouse is clicked
-                print("")
-            # # player 1's turn
-            #     if turn == 0:
-            #         col_move = int(input(" Player 1's turn "))  # User enters column values
-            #         if can_put(board, col_move):
-            #             row = next_top_row(board, col_move)
-            #             put_piece(board, row, col_move, 1)  # player 1's piece is 1
-            #         print_board(board)
+                pygame.draw.rect(screen,(0,0,0),(0,0,width,SQUARESIZE))#Masks previous coloured circle
 
-            #         if win(board, 1):
-            #             print("!!!! Player 1 wins !!!")
-            #             game_over = True  # The game is over
+                # player 1's turn
+                if turn == 0:
+                    # col_move = int(input(" Player 1's turn "))  # User enters column values
+                    posx = event.pos[0]  # position of x-axis of mouse click
+                    col_move = int(math.floor(posx / SQUARESIZE))
+                    if can_put(board, col_move):
+                        row = next_top_row(board, col_move)
+                        put_piece(board, row, col_move, 1)  # player 1's piece is 1
+                    print_board(board)
+                    draw_board(board)
 
-            #     else:  # Player 2's turn
-            #         col_move = int(input(" Player 2's turn "))
-            #         if can_put(board, col_move):
-            #             row = next_top_row(board, col_move)
-            #             put_piece(board, row, col_move, 2)  # player 2's piece is 2
-            #         print_board(board)
+                    if win(board, 1):
+                        label=my_font.render("!!! Player 1 Wins !!!",1,(255,255,0))
+                        screen.blit(label,(40,10))
+                        # The winning message
+                        game_over = True  # The game is over
 
-            #         if win(board, 2):
-            #             print("!!! Player 2 wins !!!")
-            #             game_over = True  # The game is over
+                else:  # Player 2's turn
+                    # col_move = int(input(" Player 2's turn "))
+                    posx = event.pos[0]  # position of x-axis of mouse click
+                    col_move = int(math.floor(posx / SQUARESIZE))
+                    if can_put(board, col_move):
+                        row = next_top_row(board, col_move)
+                        put_piece(board, row, col_move, 2)  # player 2's piece is 2
+                    print_board(board)
 
-            #     turn += 1
-            #     turn = turn % 2  # Turn we either be 0 or 1
+                    if win(board, 2):
+                        label=my_font.render("!!! Player 2 Wins !!!",1,(255,0,0))
+                        screen.blit(label,(40,10))
+                        # The winning message
+                        
+                        game_over = True  # The game is over
+
+                draw_board(board)
+                
+                turn += 1
+                turn = turn % 2  # Turn we either be 0 or 1
+                if game_over:
+                    pygame.time.wait(5000)#Wait before closing the window after game is over
